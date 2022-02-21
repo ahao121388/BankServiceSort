@@ -2,11 +2,50 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.chao.bankservicesort.sortservice.mapper.SortMapper">
+
+    <!-- Login   -->
     <select id="Login"
             parameterType="com.chao.bankservicesort.sortservice.dto.SetterLoginDto"
-            resultType="java.lang.Integer">
-        select COUNT(*)
+            resultType="java.lang.String">
+        select id
         from setter
         where phone_number=#{phoneNumber} and passwd=#{passwd};
+    </select>
+    <!--  Product Home  -->
+    <resultMap id="ProductsInHomePageMap" type="com.chao.bankservicesort.sortservice.dto.ProductDto">
+        <result column="real_name" property="setterName"></result>
+    </resultMap>
+    
+    <select id="ProductHome" resultMap="ProductsInHomePageMap">
+        select product.id, product.name, product.category, product.introduction, product.duration, product.state, real_name
+        from product,setter
+        where state>0 and product.setter_id=setter.id;
+    </select>
+
+    <!-- Save Product Basc Properties   -->
+
+    <insert id="SaveProductBascProperties"
+            parameterType="com.chao.bankservicesort.sortservice.po.Product"
+            >
+        insert into product (id, name, atom_sequence, introduction, category, state, sum_stock, duration,
+                             annualized_interest_rate, personal_amount_limit, day_amount_limit, risk_rank,
+                             interest_settlement_method, issued_time, sell_duration, increment_amount, initial_deposit_amount,
+                             setter_id)
+        value (NULL, #{name}, NULL, #{introduction}, #{category}, #{state}, #{sumStock}, #{duration},
+            #{annualizedInterestRate}, #{personalAmountLimit}, #{dayAmountLimit}, #{riskRank},
+            #{interestSettlementMethod}, NULL, #{sellDuration}, NULL, #{initialDepositAmount},
+            #{setterId});
+    </insert>
+
+    <!-- CheckAllAtoms   -->
+
+    <resultMap id="CheckAllAtomsMap" type="com.chao.bankservicesort.sortservice.po.Atom">
+        <result column="function_tip" property="functionTip"></result>
+    </resultMap>
+
+    <select id="CheckAllAtoms" resultMap="CheckAllAtomsMap">
+        select *
+        from atom
+        where state>0;
     </select>
 </mapper>
